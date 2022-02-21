@@ -1,7 +1,6 @@
 {
   messages {
     id
-    datetime
     content
     user
   }

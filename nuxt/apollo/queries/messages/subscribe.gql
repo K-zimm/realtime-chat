@@ -1,0 +1,8 @@
+subscription {
+  messages {
+    id
+    datetime
+    content
+    user
+  }
+}

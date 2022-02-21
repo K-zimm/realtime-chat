@@ -1,5 +1,6 @@
 <script>
 import getMessages from '~/apollo/queries/messages/get'
+import subscribeMessages from '~/apollo/queries/messages/subscribe'
 import postMessage from '~/apollo/queries/messages/post'
 
 export default {
@@ -9,6 +10,23 @@ export default {
       prefetch: true,
       query: getMessages,
     },
+    $subscribe: {
+      messages: {
+        query: subscribeMessages,
+        result({ data, loading }) {
+          this.loading = loading
+
+          console.log(data)
+          this.messages = data.messages
+        },
+        error(err) {
+          this.$notify({
+            message: `Fucked up: ${err.message}`,
+            type: 'error',
+          })
+        },
+      },
+    },
   },
   data() {
     return {
@@ -17,13 +35,13 @@ export default {
     }
   },
   methods: {
-    sendMessage() {
+    async sendMessage() {
       if (this.message.length > 0) {
         const payload = {
           user: this.$store.state.user.name,
           content: this.message,
         }
-        this.$apollo.mutate({ mutation: postMessage, variables: payload })
+        await this.$apollo.mutate({ mutation: postMessage, variables: payload })
       }
       this.message = ''
     },
@@ -32,6 +50,10 @@ export default {
         this.sendMessage()
       }
     },
+  },
+  mount() {
+    console.log(this.$apollo.subscriptions.messages)
+    this.$apollo.subscriptions.messages.start()
   },
 }
 </script>
