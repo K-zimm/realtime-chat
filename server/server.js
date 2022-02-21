@@ -62,6 +62,7 @@ const resolvers = {
   Query: {
     messages: async () => {
       try {
+        const messages = await Message.find();
         return messages;
       } catch (error) {
         console.log('Error', error);
